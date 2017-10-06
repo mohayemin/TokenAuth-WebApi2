@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
@@ -10,5 +11,12 @@ namespace Api.Controllers
 		{
 			return Ok("accessible without access token");
 		}
-    }
+
+		[HttpGet("requirestoken")]
+		[Authorize]
+		public IActionResult RequiresToken()
+		{
+			return Ok("accessible only with access token");
+		}
+	}
 }
