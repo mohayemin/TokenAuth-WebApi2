@@ -6,25 +6,21 @@ namespace TokeAuth.Controllers
 	[Route("token")]
 	public class TokenController : Controller
 	{
-		private readonly ITokenBuilder _builder;
+		private readonly ITokenIssuer _issuer;
 
-		public TokenController(ITokenBuilder builder)
+		public TokenController(ITokenIssuer issuer)
 		{
-			_builder = builder;
+			_issuer = issuer;
 		}
 
 		[HttpPost]
-		public IActionResult Issue([FromBody]string username, [FromBody]string password)
+		public IActionResult Issue([FromBody]Credential credential)
 		{
-			if (username != null && username != password)
+			if (_issuer.TryIssue(credential, out object response))
 			{
-				return Unauthorized();
+				return Ok(response);
 			}
-			else
-			{
-				var token = _builder.Build("mohayemin");
-				return Ok(token);
-			}
+			return Unauthorized();
 		}
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using Api.Services;
+using Api.Services.Samples;
 using System.Linq;
 using Xunit;
 

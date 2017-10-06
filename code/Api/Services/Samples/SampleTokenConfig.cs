@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace Api.Services
+namespace Api.Services.Samples
 {
     public class SampleTokenConfig : ITokenConfig
     {
