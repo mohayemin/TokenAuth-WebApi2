@@ -18,7 +18,7 @@ namespace UnitTest
 		public void TokenHasTwoDots()
 		{
 			var token = _builder.Build("whatever");
-			Assert.Equal(2, token.Count(c => c == '.'));
+			Assert.Equal(2, token.AccessToken.Count(c => c == '.'));
 		}
 	}
 }

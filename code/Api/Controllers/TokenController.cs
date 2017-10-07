@@ -1,6 +1,7 @@
 ﻿using Api.Services;
 using Api.Services.Requests;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace TokeAuth.Controllers
 {
@@ -15,11 +16,12 @@ namespace TokeAuth.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Issue([FromBody]TokenIssueRequest request)
+		public async Task<IActionResult> Issue([FromBody]TokenIssueRequest request)
 		{
-			if (_issuer.TryIssue(request, out object response))
+			var token = await _issuer.Issue(request);
+			if (token != null)
 			{
-				return Ok(response);
+				return Ok(token);
 			}
 			return Unauthorized();
 		}

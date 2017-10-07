@@ -1,9 +1,10 @@
 ﻿using Api.Services.Requests;
+using System.Threading.Tasks;
 
 namespace Api.Services
 {
 	public interface ITokenIssuer
 	{
-		bool TryIssue(TokenIssueRequest request, out object response);
+		Task<Token> Issue(TokenIssueRequest request);
 	}
 }

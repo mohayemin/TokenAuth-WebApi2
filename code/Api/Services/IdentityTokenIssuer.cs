@@ -3,7 +3,9 @@ using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Api.Services
 {
@@ -25,44 +27,81 @@ namespace Api.Services
 			_db = db;
 		}
 
-		// todo: refactor long method
-		public bool TryIssue(TokenIssueRequest request, out object response)
+		public async Task<Token> Issue(TokenIssueRequest request)
 		{
-			var user = _userManager.FindByNameAsync(request.Username).Result;
+			var user = await FindUserAsync(request);
 
 			if (user != null)
 			{
-				var signInResult = _signInManager.CheckPasswordSignInAsync(user, request.Password, false).Result;
+				var token = _tokenBuilder.Build(user.Id);
 
+				await UpsertRefreshTokenAsync(token);
+
+				return token;
+			}
+			return null;
+		}
+
+		private async Task UpsertRefreshTokenAsync(Token token)
+		{
+			var dbSet = _db.Set<RefreshToken>();
+			var refreshToken = await dbSet.FindAsync(token.UserId);
+
+			if (refreshToken != null)
+			{
+				refreshToken.Token = token.RefreshToken;
+				refreshToken.Expires = token.RefreshTokenExpires;
+				dbSet.Update(refreshToken);
+			}
+			else
+			{
+				refreshToken = new RefreshToken(token.UserId, token.RefreshToken, token.RefreshTokenExpires);
+				dbSet.Add(refreshToken);
+			}
+
+			await _db.SaveChangesAsync();
+		}
+
+		private async Task<IdentityUser> FindUserAsync(TokenIssueRequest request)
+		{
+			var user = await FindWithRefreshToken(request.RefreshToken);
+
+			if (user == null && request.Username != null)
+			{
+				user = await FindWithUsernamePassword(request.Username, request.Password);
+			}
+
+			return user;
+		}
+
+		private async Task<IdentityUser> FindWithUsernamePassword(string username, string password)
+		{
+			var user = await _userManager.FindByNameAsync(username);
+
+			if (user != null)
+			{
+				var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, false);
 				if (signInResult.Succeeded)
 				{
-					var token = _tokenBuilder.Build(user.Id);
-					var refreshToken = token.RefreshToken;
-
-					_db.Set<RefreshToken>().Attach(refreshToken);
-					if (_db.Set<RefreshToken>().Any(rt => rt.UserId == user.Id))
-					{
-						_db.Entry(refreshToken).State = EntityState.Modified;
-					}
-					else
-					{
-						_db.Entry(refreshToken).State = EntityState.Added;
-					}
-					_db.SaveChangesAsync();
-
-					response = new
-					{
-						userId = user.Id,
-						userName = user.UserName,
-						accessToken = token.AccessToken,
-						refreshToken = refreshToken.Token
-					};
-					return true;
+					return user;
 				}
 			}
 
-			response = null;
-			return false;
+			return null;
+		}
+
+		private async Task<IdentityUser> FindWithRefreshToken(string refreshToken)
+		{
+			var dbToken = await _db.Set<RefreshToken>().FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+
+			if (dbToken != null && dbToken.Expires > DateTime.UtcNow)
+			{
+				return await _userManager.FindByIdAsync(dbToken.UserId);
+			}
+			else
+			{
+				return null;
+			}
 		}
 	}
 }

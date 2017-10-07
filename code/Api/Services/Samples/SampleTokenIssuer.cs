@@ -1,4 +1,6 @@
-﻿using Api.Services.Requests;
+﻿using System.Threading.Tasks;
+using Api.Services.Requests;
+using System;
 
 namespace Api.Services.Samples
 {
@@ -12,20 +14,14 @@ namespace Api.Services.Samples
 			_tokenBuilder = tokenBuilder;
 		}
 
-		public bool TryIssue(TokenIssueRequest credential, out object response)
+		public Task<Token> Issue(TokenIssueRequest request)
 		{
-			if (credential.Username != null && credential.Username == credential.Password)
+			if (request.Username != null && request.Username == request.Password)
 			{
-				response = new {
-					Username = credential.Username,
-					Token = _tokenBuilder.Build(credential.Username)
-				};
-
-				return true;
+				var userId = $"id_{request.Username}";
+				return Task.FromResult(_tokenBuilder.Build(userId));
 			}
-
-			response = null;
-			return false;
+			return null;
 		}
 	}
 }

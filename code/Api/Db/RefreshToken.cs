@@ -12,9 +12,6 @@ namespace Api.Db
 		public string Token { get; set; }
 		public DateTime Expires { get; set; }
 
-		[ForeignKey(nameof(UserId))]
-		public virtual IdentityUser User { get; set; }
-
 		public RefreshToken() { }
 
 		public RefreshToken(string userId, string token, DateTime expires)

@@ -18,10 +18,14 @@ namespace Api.Services
 
 		public Token Build(string userId)
 		{
-			return new Token(BuildAccessToken(userId), BuildRefreshToken(userId));
+			return new Token(userId,
+				BuildAccessToken(userId),
+				CryptoRandomGenerator.GenerateString(_config.RefreshTokenLength),
+				DateTime.UtcNow.AddHours(_config.RefreshTokenLifetimeHours)
+			);
 		}
 
-		private string BuildAccessToken(string userId)
+		protected string BuildAccessToken(string userId)
 		{
 			var claims = new List<Claim>
 			{
@@ -32,20 +36,12 @@ namespace Api.Services
 			var identity = new ClaimsIdentity(claims);
 
 			var jwtHandler = new JwtSecurityTokenHandler();
-			var accessToken = jwtHandler.CreateEncodedJwt(_config.Issuer,
+			return jwtHandler.CreateEncodedJwt(_config.Issuer,
 				_config.Audiance,
 				identity,
 				null,
 				DateTime.UtcNow.AddMinutes(_config.AccessTokenLifeTimeMinutes),
 				DateTime.UtcNow, _config.SigningCredentials);
-
-			return accessToken;
-		}
-
-		private RefreshToken BuildRefreshToken(string userId)
-		{
-			var token = CryptoRandomGenerator.GenerateString(_config.RefreshTokenLength);
-			return new RefreshToken(userId, token, DateTime.UtcNow.AddHours(_config.RefreshTokenLifetimeHours));
 		}
 	}
 }
