@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Api.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,23 +8,22 @@ namespace Api.Controllers
 	[Route("user")]
 	public class UserController : Controller
 	{
-		private readonly UserManager<IdentityUser> userManager;
+		private readonly UserManager<IdentityUser> _userManager;
 
 		public UserController(UserManager<IdentityUser> userManager)
 		{
-			this.userManager = userManager;
+			_userManager = userManager;
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody]string username)
+		public async Task<IActionResult> Post([FromBody]UserCreateRequest request)
 		{
-			username = "moha";
-			var user = new IdentityUser() { UserName = username };
-			var result = await userManager.CreateAsync(user, "123");
+			var user = request.ToDbObject();
+			var result = await _userManager.CreateAsync(user, request.Password);
 
 			if (result.Succeeded)
 			{
-				return Created($"user/{username}", user);
+				return Created($"user/{user.Id}", user);
 			}
 			return StatusCode(500, result.Errors);
 		}

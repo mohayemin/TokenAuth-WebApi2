@@ -10,7 +10,7 @@ namespace Api.Services.Samples
 
 		public string Audiance => "BenzeneSoft";
 
-		public double LifeTimeMinutes => 1;
+		public double LifeTimeMinutes => 60;
 
 		public SigningCredentials SigningCredentials => new SigningCredentials(
 												new SymmetricSecurityKey(Encoding.ASCII.GetBytes("C6H6 is benzene and the key needs to be really long")),

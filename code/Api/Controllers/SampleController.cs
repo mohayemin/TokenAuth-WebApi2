@@ -18,5 +18,12 @@ namespace Api.Controllers
 		{
 			return Ok("accessible only with access token");
 		}
+
+		[HttpGet("requiresadmin")]
+		[Authorize(Roles = "admin")]
+		public IActionResult RequiresAdmin()
+		{
+			return Ok("accessible only with access token");
+		}
 	}
 }

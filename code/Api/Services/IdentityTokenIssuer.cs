@@ -32,8 +32,7 @@ namespace Api.Services
 				{
 					response = new
 					{
-						userId = user.Id,
-						username = user.UserName,
+						user = user,
 						accessToken = _tokenBuilder.Build(credential.Username)
 					};
 					return true;
