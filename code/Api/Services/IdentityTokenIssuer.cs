@@ -1,6 +1,9 @@
-﻿
+﻿using Api.Db;
+using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Api.Services
 {
@@ -10,16 +13,20 @@ namespace Api.Services
 		private readonly UserManager<IdentityUser> _userManager;
 		private readonly SignInManager<IdentityUser> _signInManager;
 		private readonly ITokenBuilder _tokenBuilder;
+		private readonly IdentityDbContext _db;
 
 		public IdentityTokenIssuer(UserManager<IdentityUser> userManager,
 			SignInManager<IdentityUser> signInManager,
+			IdentityDbContext db,
 			ITokenBuilder tokenBuilder)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_tokenBuilder = tokenBuilder;
+			_db = db;
 		}
 
+		// todo: refactor long method
 		public bool TryIssue(Credential credential, out object response)
 		{
 			var user = _userManager.FindByNameAsync(credential.Username).Result;
@@ -30,10 +37,26 @@ namespace Api.Services
 
 				if (signInResult.Succeeded)
 				{
+					var token = _tokenBuilder.Build(user.Id);
+					var refreshToken = token.RefreshToken;
+
+					_db.Set<RefreshToken>().Attach(refreshToken);
+					if (_db.Set<RefreshToken>().Any(rt => rt.UserId == user.Id))
+					{
+						_db.Entry(refreshToken).State = EntityState.Modified;
+					}
+					else
+					{
+						_db.Entry(refreshToken).State = EntityState.Added;
+					}
+					_db.SaveChangesAsync();
+
 					response = new
 					{
-						user = user,
-						accessToken = _tokenBuilder.Build(credential.Username)
+						userId = user.Id,
+						userName = user.UserName,
+						accessToken = token.AccessToken,
+						refreshToken = refreshToken.Token
 					};
 					return true;
 				}

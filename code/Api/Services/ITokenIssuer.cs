@@ -1,4 +1,5 @@
-﻿
+﻿using Api.Services.Requests;
+
 namespace Api.Services
 {
 	public interface ITokenIssuer

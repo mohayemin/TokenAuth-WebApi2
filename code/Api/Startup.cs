@@ -8,6 +8,7 @@ using Api.Services.Samples;
 using Microsoft.AspNetCore.Identity;
 using Api.Db;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Api
 {
@@ -15,17 +16,16 @@ namespace Api
 	{
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddDbContext<AuthDbContext>(options =>
-			{
-				options.UseInMemoryDatabase("authdb");
-			});
+			services.AddDbContext<AuthDbContext>(options => options.UseInMemoryDatabase("authdb"));
 
 			ConfigureIdentity(services);
 			ConfigureAuth(services);
 
 			services.AddMvc();
 
-			services.AddSingleton<ITokenConfig, SampleTokenConfig>()
+			services
+				.AddSingleton<ITokenConfig, SampleTokenConfig>()
+				.AddScoped<IdentityDbContext, AuthDbContext>()
 				.AddScoped<ITokenBuilder, JwtTokenBuilder>()
 				.AddScoped<ITokenIssuer, IdentityTokenIssuer>()
 				.AddScoped<UserService>();

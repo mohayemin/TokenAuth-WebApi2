@@ -6,7 +6,10 @@ namespace Api.Services
 	{
 		string Issuer { get; }
 		string Audiance { get; }
-		double LifeTimeMinutes { get; }
+		double AccessTokenLifeTimeMinutes { get; }
+
+		int RefreshTokenLength { get; }
+		double RefreshTokenLifetimeHours { get; }
 
 		SigningCredentials SigningCredentials { get; }
 	}

@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Api.Db;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,25 +16,36 @@ namespace Api.Services
 			_config = config;
 		}
 
-		public string Build(string username)
+		public Token Build(string userId)
+		{
+			return new Token(BuildAccessToken(userId), BuildRefreshToken(userId));
+		}
+
+		private string BuildAccessToken(string userId)
 		{
 			var claims = new List<Claim>
 			{
-			  new Claim(JwtRegisteredClaimNames.Sub, username),
+			  new Claim(JwtRegisteredClaimNames.Sub, userId),
 			  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 			};
 
 			var identity = new ClaimsIdentity(claims);
 
 			var jwtHandler = new JwtSecurityTokenHandler();
-			var token = jwtHandler.CreateEncodedJwt(_config.Issuer,
+			var accessToken = jwtHandler.CreateEncodedJwt(_config.Issuer,
 				_config.Audiance,
 				identity,
 				null,
-				DateTime.UtcNow.AddMinutes(_config.LifeTimeMinutes),
+				DateTime.UtcNow.AddMinutes(_config.AccessTokenLifeTimeMinutes),
 				DateTime.UtcNow, _config.SigningCredentials);
 
-			return token;
+			return accessToken;
+		}
+
+		private RefreshToken BuildRefreshToken(string userId)
+		{
+			var token = CryptoRandomGenerator.GenerateString(_config.RefreshTokenLength);
+			return new RefreshToken(userId, token, DateTime.UtcNow.AddHours(_config.RefreshTokenLifetimeHours));
 		}
 	}
 }
