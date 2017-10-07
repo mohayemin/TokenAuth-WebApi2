@@ -21,32 +21,46 @@ namespace Api.Services
 
 		public async Task<IdentityResult> ResetPassword(ResetPasswordRequest request)
 		{
-			IdentityUser user;
-			if (!string.IsNullOrWhiteSpace(request.UserId))
-			{
-				user = await _userManager.FindByIdAsync(request.UserId);
-			}
-			else
-			{
-				user = await _userManager.FindByNameAsync(request.Username);
-			}
-
-			IdentityResult result;
+			var user = await FindUser(request);
 			if (user != null)
 			{
 				var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-				result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
-			}
-			else
-			{
-				result = IdentityResult.Failed(new IdentityError
-				{
-					Code = "NoSuchUser",
-					Description = "Could not find user"
-				});
+				return await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
 			}
 
-			return result;
+			return NoSuchUserResult();
+		}
+
+		public async Task<IdentityResult> Delete(IUserIdentifier userIdentifier)
+		{
+			var user = await FindUser(userIdentifier);
+			if (user != null)
+			{
+				return await _userManager.DeleteAsync(user);
+			}
+			return NoSuchUserResult();
+		}
+
+		private IdentityResult NoSuchUserResult()
+		{
+			return IdentityResult.Failed(new IdentityError
+			{
+				Code = "NoSuchUser",
+				Description = "Could not find user"
+			});
+		}
+
+		private Task<IdentityUser> FindUser(IUserIdentifier userIdentifier)
+		{
+			switch (userIdentifier)
+			{
+				case var uid when uid.UserId != null:
+					return _userManager.FindByIdAsync(userIdentifier.UserId);
+				case var uid when uid.Username != null:
+					return _userManager.FindByNameAsync(userIdentifier.Username);
+				default:
+					return null;
+			}
 		}
 	}
 }
