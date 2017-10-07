@@ -15,9 +15,9 @@ namespace TokeAuth.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult Issue([FromBody]Credential credential)
+		public IActionResult Issue([FromBody]TokenIssueRequest request)
 		{
-			if (_issuer.TryIssue(credential, out object response))
+			if (_issuer.TryIssue(request, out object response))
 			{
 				return Ok(response);
 			}

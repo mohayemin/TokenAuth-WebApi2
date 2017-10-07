@@ -12,7 +12,7 @@ namespace Api.Services.Samples
 			_tokenBuilder = tokenBuilder;
 		}
 
-		public bool TryIssue(Credential credential, out object response)
+		public bool TryIssue(TokenIssueRequest credential, out object response)
 		{
 			if (credential.Username != null && credential.Username == credential.Password)
 			{

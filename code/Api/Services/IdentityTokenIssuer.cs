@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace Api.Services
 {
-
 	public class IdentityTokenIssuer : ITokenIssuer
 	{
 		private readonly UserManager<IdentityUser> _userManager;
@@ -27,13 +26,13 @@ namespace Api.Services
 		}
 
 		// todo: refactor long method
-		public bool TryIssue(Credential credential, out object response)
+		public bool TryIssue(TokenIssueRequest request, out object response)
 		{
-			var user = _userManager.FindByNameAsync(credential.Username).Result;
+			var user = _userManager.FindByNameAsync(request.Username).Result;
 
 			if (user != null)
 			{
-				var signInResult = _signInManager.CheckPasswordSignInAsync(user, credential.Password, false).Result;
+				var signInResult = _signInManager.CheckPasswordSignInAsync(user, request.Password, false).Result;
 
 				if (signInResult.Succeeded)
 				{
