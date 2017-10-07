@@ -1,29 +1,43 @@
 ﻿using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
+	//todo: [Authorize(Roles = "admin")]
 	[Route("user")]
 	public class UserController : Controller
 	{
-		private readonly UserManager<IdentityUser> _userManager;
+		private readonly UserService _service;
 
-		public UserController(UserManager<IdentityUser> userManager)
+		public UserController(UserService service)
 		{
-			_userManager = userManager;
+			_service = service;
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody]UserCreateRequest request)
+		public async Task<IActionResult> Create([FromBody]UserCreateRequest request)
 		{
-			var user = request.ToDbObject();
-			var result = await _userManager.CreateAsync(user, request.Password);
+			var result = await _service.Create(request);
+			return GetResult(result, 201);
+		}
 
+		[HttpPost(nameof(ResetPassword))]
+		public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordRequest request)
+		{
+			var result = await _service.ResetPassword(request);
+			return GetResult(result, 200);
+		}
+
+		private IActionResult GetResult(IdentityResult result, int successCode)
+		{
 			if (result.Succeeded)
 			{
-				return Created($"user/{user.Id}", user);
+				return StatusCode(successCode);
 			}
 			return StatusCode(500, result.Errors);
 		}

@@ -27,7 +27,8 @@ namespace Api
 
 			services.AddSingleton<ITokenConfig, SampleTokenConfig>()
 				.AddScoped<ITokenBuilder, JwtTokenBuilder>()
-				.AddScoped<ITokenIssuer, IdentityTokenIssuer>();
+				.AddScoped<ITokenIssuer, IdentityTokenIssuer>()
+				.AddScoped<UserService>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -52,7 +53,8 @@ namespace Api
 				opt.Password.RequireLowercase = false;
 			}).AddRoles<IdentityRole>()
 			.AddEntityFrameworkStores<AuthDbContext>()
-			.AddSignInManager<SignInManager<IdentityUser>>();
+			.AddSignInManager<SignInManager<IdentityUser>>()
+			.AddDefaultTokenProviders();
 		}
 
 		private void ConfigureAuth(IServiceCollection services)
