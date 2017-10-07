@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Services
+namespace Api.Services.Requests
 {
     public class UserCreateRequest
     {

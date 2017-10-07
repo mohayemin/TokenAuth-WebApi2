@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Api.Services.Requests;
+using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
 namespace Api.Services
@@ -12,11 +13,10 @@ namespace Api.Services
 			_userManager = userManager;
 		}
 
-		public async Task<IdentityResult> Create(UserCreateRequest request)
+		public Task<IdentityResult> Create(UserCreateRequest request)
 		{
 			var user = request.ToDbObject();
-			var result = await _userManager.CreateAsync(user, request.Password);
-			return result;
+			return _userManager.CreateAsync(user, request.Password);
 		}
 
 		public async Task<IdentityResult> ResetPassword(ResetPasswordRequest request)

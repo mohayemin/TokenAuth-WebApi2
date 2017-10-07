@@ -1,4 +1,4 @@
-﻿namespace Api.Services
+﻿namespace Api.Services.Requests
 {
 
 	public class UserIdentifier: IUserIdentifier
