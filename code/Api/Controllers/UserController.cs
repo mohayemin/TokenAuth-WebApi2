@@ -18,11 +18,25 @@ namespace Api.Controllers
 			_service = service;
 		}
 
+		[HttpGet]
+		public async Task<IActionResult> Get(UserIdentifier identifier)
+		{
+			var user = await _service.Find(identifier);
+			return (user == null) ? (IActionResult)NotFound() : Ok(user);
+		}
+
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody]UserCreateRequest request)
 		{
 			var result = await _service.Create(request);
 			return GetResult(result, 201);
+		}
+
+		[HttpPut]
+		public async Task<IActionResult> Update([FromBody]UserUpdateRequest request)
+		{
+			var result = await _service.UpdateAsync(request);
+			return GetResult(result, 204);
 		}
 
 		[HttpPost(nameof(ResetPassword))]

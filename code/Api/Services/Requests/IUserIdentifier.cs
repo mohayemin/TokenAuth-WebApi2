@@ -2,7 +2,7 @@
 {
 	public interface IUserIdentifier
 	{
-		string UserId { get; }
+		string Id { get; }
 		string Username { get; }
 		string Email { get; }
 	}

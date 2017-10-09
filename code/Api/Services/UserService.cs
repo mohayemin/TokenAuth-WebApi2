@@ -2,6 +2,7 @@
 using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using System;
 
 namespace Api.Services
 {
@@ -22,15 +23,20 @@ namespace Api.Services
 			return _userManager.CreateAsync(user, request.Password);
 		}
 
+		public async Task<IdentityResult> UpdateAsync(UserUpdateRequest request)
+		{
+			var user = await Find(request);
+			request.PopulateChanges(user);
+			return await _userManager.UpdateAsync(user);
+		}
+
 		public async Task<IdentityResult> ResetPassword(ResetPasswordRequest request)
 		{
-			var user = await FindUser(request);
+			var user = await Find(request);
 			if (user != null)
 			{
 				var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-				var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
-				
-				return result;
+				return await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
 			}
 
 			return NoSuchUserResult();
@@ -38,7 +44,7 @@ namespace Api.Services
 
 		public async Task<IdentityResult> ChangeEmail(ChangeEmailRequest request)
 		{
-			var user = await FindUser(request);
+			var user = await Find(request);
 			if (user != null)
 			{
 				var oldEmail = user.Email;
@@ -56,7 +62,7 @@ namespace Api.Services
 
 		public async Task<IdentityResult> Delete(IUserIdentifier userIdentifier)
 		{
-			var user = await FindUser(userIdentifier);
+			var user = await Find(userIdentifier);
 			if (user != null)
 			{
 				return await _userManager.DeleteAsync(user);
@@ -73,12 +79,12 @@ namespace Api.Services
 			});
 		}
 
-		private Task<IdentityUser> FindUser(IUserIdentifier userIdentifier)
+		public Task<IdentityUser> Find(IUserIdentifier userIdentifier)
 		{
 			switch (userIdentifier)
 			{
-				case var uid when uid.UserId != null:
-					return _userManager.FindByIdAsync(userIdentifier.UserId);
+				case var uid when uid.Id != null:
+					return _userManager.FindByIdAsync(userIdentifier.Id);
 				case var uid when uid.Username != null:
 					return _userManager.FindByNameAsync(userIdentifier.Username);
 				case var uid when uid.Email != null:
