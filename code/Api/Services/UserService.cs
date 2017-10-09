@@ -79,6 +79,16 @@ namespace Api.Services
 			return NoSuchUserResult();
 		}
 
+		public async Task<IdentityResult> DeleteRolesAsync(RoleAssignmentRequest request)
+		{
+			var user = await Find(request);
+			if (user != null)
+			{
+				return await _userManager.RemoveFromRolesAsync(user, request.Roles);
+			}
+			return NoSuchUserResult();
+		}
+
 		private IdentityResult NoSuchUserResult()
 		{
 			return IdentityResult.Failed(new IdentityError

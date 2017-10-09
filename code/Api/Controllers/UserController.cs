@@ -67,6 +67,13 @@ namespace Api.Controllers
 			return GetResult(result, 204);
 		}
 
+		[HttpPut(nameof(DeleteRoles))]
+		public async Task<IActionResult> DeleteRoles([FromBody]RoleAssignmentRequest request)
+		{
+			var result = await _service.DeleteRolesAsync(request);
+			return GetResult(result, 204);
+		}
+
 		private IActionResult GetResult(IdentityResult result, int successCode)
 		{
 			switch (result)
