@@ -10,6 +10,7 @@ using Api.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Api.Notifications;
+using System;
 
 namespace Api
 {
@@ -93,6 +94,18 @@ namespace Api
 			{
 				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 				roleManager.CreateAsync(new IdentityRole("admin"));
+				roleManager.CreateAsync(new IdentityRole("moderator"));
+				roleManager.CreateAsync(new IdentityRole("regular"));
+
+				var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+				var adminUser = new IdentityUser("admin") { Email = "admin@nomail.com" };
+				userManager.CreateAsync(adminUser, "123");
+
+				userManager.AddToRoleAsync(adminUser, "admin");
+
+				var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+				db.Set<RefreshToken>().AddAsync(new RefreshToken(adminUser.Id, "xyz", DateTime.MaxValue));
+				db.SaveChangesAsync();
 			}
 		}
 	}
