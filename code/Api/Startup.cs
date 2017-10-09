@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Api.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Api.Notifications;
 
 namespace Api
 {
@@ -28,6 +29,7 @@ namespace Api
 				.AddScoped<IdentityDbContext, AuthDbContext>()
 				.AddScoped<ITokenBuilder, JwtTokenBuilder>()
 				.AddScoped<ITokenIssuer, IdentityTokenIssuer>()
+				.AddScoped<INotifier, SampleNotifier>()
 				.AddScoped<UserService>();
 		}
 

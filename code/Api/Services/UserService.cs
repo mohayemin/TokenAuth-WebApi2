@@ -1,17 +1,19 @@
-﻿using Api.Services.Requests;
+﻿using Api.Notifications;
+using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using System;
 
 namespace Api.Services
 {
 	public class UserService
 	{
 		private readonly UserManager<IdentityUser> _userManager;
+		private readonly INotifier _notifier;
 
-		public UserService(UserManager<IdentityUser> userManager)
+		public UserService(UserManager<IdentityUser> userManager, INotifier notifier)
 		{
 			_userManager = userManager;
+			_notifier = notifier;
 		}
 
 		public Task<IdentityResult> Create(UserCreateRequest request)
@@ -26,7 +28,9 @@ namespace Api.Services
 			if (user != null)
 			{
 				var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-				return await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+				var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+				
+				return result;
 			}
 
 			return NoSuchUserResult();
@@ -37,8 +41,14 @@ namespace Api.Services
 			var user = await FindUser(request);
 			if (user != null)
 			{
+				var oldEmail = user.Email;
 				var token = await _userManager.GenerateChangeEmailTokenAsync(user, request.NewEmail);
-				return await _userManager.ChangeEmailAsync(user, request.NewEmail, token);
+				var result = await _userManager.ChangeEmailAsync(user, request.NewEmail, token);
+
+				if (result.Succeeded)
+					_notifier.SendNotificationAsync(user, new ChangeEmailNotification(oldEmail, request.NewEmail));
+
+				return result;
 			}
 
 			return NoSuchUserResult();
