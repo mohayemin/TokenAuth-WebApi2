@@ -42,21 +42,23 @@ namespace Api
 
 			app.UseAuthentication();
 			app.UseMvc();
+
+			Seed(app);
 		}
 
 		private void ConfigureIdentity(IServiceCollection services)
 		{
-			var builder = services.AddIdentityCore<IdentityUser>(opt =>
+			var builder = services.AddIdentity<IdentityUser, IdentityRole>(opt =>
 			{
 				opt.Password.RequireDigit = false;
 				opt.Password.RequiredLength = 1;
 				opt.Password.RequireNonAlphanumeric = false;
 				opt.Password.RequireUppercase = false;
 				opt.Password.RequireLowercase = false;
-			}).AddRoles<IdentityRole>()
-			.AddEntityFrameworkStores<AuthDbContext>()
-			.AddSignInManager<SignInManager<IdentityUser>>()
-			.AddDefaultTokenProviders();
+			});
+			builder.AddEntityFrameworkStores<AuthDbContext>();
+			builder.AddSignInManager<SignInManager<IdentityUser>>();
+			builder.AddDefaultTokenProviders();
 		}
 
 		private void ConfigureAuth(IServiceCollection services)
@@ -81,6 +83,17 @@ namespace Api
 					IssuerSigningKey = config.SigningCredentials.Key
 				};
 			});
+		}
+
+		public void Seed(IApplicationBuilder app)
+		{
+			var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+
+			using (IServiceScope scope = scopeFactory.CreateScope())
+			{
+				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+				roleManager.CreateAsync(new IdentityRole("admin"));
+			}
 		}
 	}
 }
