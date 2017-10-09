@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Api.Services.Samples
 {
-    public class SampleTokenConfig : ITokenConfig
-    {
+	public class SampleTokenConfig : ITokenConfig
+	{
 		public string Issuer => "BenzeneSoft";
 		public string Audiance => "BenzeneSoft";
-		public double AccessTokenLifeTimeMinutes => 60;
+		public double AccessTokenLifeTimeMinutes => 60 * 24; // 1 day
 
 		public int RefreshTokenLength => 20;
 		public double RefreshTokenLifetimeHours => 24;

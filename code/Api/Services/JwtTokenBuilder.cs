@@ -1,7 +1,9 @@
 ﻿using Api.Db;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 
 namespace Api.Services
@@ -16,22 +18,24 @@ namespace Api.Services
 			_config = config;
 		}
 
-		public Token Build(string userId)
+		public Token Build(IdentityUser user, IEnumerable<string> roles)
 		{
-			return new Token(userId,
-				BuildAccessToken(userId),
+			return new Token(user.Id,
+				BuildAccessToken(user, roles),
 				CryptoRandomGenerator.GenerateString(_config.RefreshTokenLength),
 				DateTime.UtcNow.AddHours(_config.RefreshTokenLifetimeHours)
 			);
 		}
 
-		protected string BuildAccessToken(string userId)
+		protected string BuildAccessToken(IdentityUser user, IEnumerable<string> roles)
 		{
 			var claims = new List<Claim>
 			{
-			  new Claim(JwtRegisteredClaimNames.Sub, userId),
+			  new Claim(JwtRegisteredClaimNames.Sub, user.Id),
 			  new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 			};
+
+			claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
 			var identity = new ClaimsIdentity(claims);
 

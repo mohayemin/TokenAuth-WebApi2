@@ -1,5 +1,6 @@
 ﻿using Api.Services;
 using Api.Services.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-	//todo: [Authorize(Roles = "admin")]
 	[Route("user")]
+	[Authorize(Roles = BuiltInRoles.Admin)]
 	public class UserController : Controller
 	{
 		private readonly UserService _service;
@@ -24,7 +25,7 @@ namespace Api.Controllers
 			var user = await _service.Find(identifier);
 			return (user == null) ? (IActionResult)NotFound() : Ok(user);
 		}
-
+			
 		[HttpPost]
 		public async Task<IActionResult> Create([FromBody]UserCreateRequest request)
 		{

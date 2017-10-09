@@ -33,7 +33,8 @@ namespace Api.Services
 
 			if (user != null)
 			{
-				var token = _tokenBuilder.Build(user.Id);
+				var roles = await _userManager.GetRolesAsync(user);
+				var token = _tokenBuilder.Build(user, roles);
 
 				await UpsertRefreshTokenAsync(token);
 

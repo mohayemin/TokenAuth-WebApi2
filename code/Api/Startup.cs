@@ -93,7 +93,7 @@ namespace Api
 			using (IServiceScope scope = scopeFactory.CreateScope())
 			{
 				var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-				roleManager.CreateAsync(new IdentityRole("admin"));
+				roleManager.CreateAsync(new IdentityRole(BuiltInRoles.Admin));
 				roleManager.CreateAsync(new IdentityRole("moderator"));
 				roleManager.CreateAsync(new IdentityRole("regular"));
 
@@ -101,7 +101,7 @@ namespace Api
 				var adminUser = new IdentityUser("admin") { Email = "admin@nomail.com" };
 				userManager.CreateAsync(adminUser, "123");
 
-				userManager.AddToRoleAsync(adminUser, "admin");
+				userManager.AddToRoleAsync(adminUser, BuiltInRoles.Admin);
 
 				var db = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
 				db.Set<RefreshToken>().AddAsync(new RefreshToken(adminUser.Id, "xyz", DateTime.MaxValue));

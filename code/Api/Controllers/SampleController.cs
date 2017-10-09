@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -20,7 +21,7 @@ namespace Api.Controllers
 		}
 
 		[HttpGet("requiresadmin")]
-		[Authorize(Roles = "admin")]
+		[Authorize(Roles = BuiltInRoles.Admin)]
 		public IActionResult RequiresAdmin()
 		{
 			return Ok("accessible only with access token");
