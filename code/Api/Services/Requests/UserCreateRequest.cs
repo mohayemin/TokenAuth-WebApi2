@@ -14,7 +14,6 @@ namespace Api.Services.Requests
 
 		public IdentityUser ToDbObject()
 		{
-			// todo: replace with automapper
 			return new IdentityUser
 			{
 				UserName = Username,
