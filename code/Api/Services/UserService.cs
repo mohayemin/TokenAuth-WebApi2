@@ -2,7 +2,6 @@
 using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
-using System;
 
 namespace Api.Services
 {
@@ -66,6 +65,16 @@ namespace Api.Services
 			if (user != null)
 			{
 				return await _userManager.DeleteAsync(user);
+			}
+			return NoSuchUserResult();
+		}
+
+		public async Task<IdentityResult> AddRolesAsync(RoleAssignmentRequest request)
+		{
+			var user = await Find(request);
+			if (user != null)
+			{
+				return await _userManager.AddToRolesAsync(user, request.Roles);
 			}
 			return NoSuchUserResult();
 		}

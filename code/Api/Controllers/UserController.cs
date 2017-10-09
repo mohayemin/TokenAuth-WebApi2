@@ -35,7 +35,7 @@ namespace Api.Controllers
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody]UserUpdateRequest request)
 		{
-			var result = await _service.UpdateAsync(request);
+			var result = await _service.UpdateAsync(request);			
 			return GetResult(result, 204);
 		}
 
@@ -57,6 +57,13 @@ namespace Api.Controllers
 		public async Task<IActionResult> ChangeEmail([FromBody]ChangeEmailRequest request)
 		{
 			var result = await _service.ChangeEmail(request);
+			return GetResult(result, 204);
+		}
+
+		[HttpPut(nameof(AddRoles))]
+		public async Task<IActionResult> AddRoles([FromBody]RoleAssignmentRequest request)
+		{
+			var result = await _service.AddRolesAsync(request);
 			return GetResult(result, 204);
 		}
 
