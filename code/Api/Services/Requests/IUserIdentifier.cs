@@ -4,5 +4,6 @@
 	{
 		string UserId { get; }
 		string Username { get; }
+		string Email { get; }
 	}
 }

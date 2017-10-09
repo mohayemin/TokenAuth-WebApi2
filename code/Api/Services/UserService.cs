@@ -1,6 +1,7 @@
 ﻿using Api.Services.Requests;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using System;
 
 namespace Api.Services
 {
@@ -26,6 +27,18 @@ namespace Api.Services
 			{
 				var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 				return await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+			}
+
+			return NoSuchUserResult();
+		}
+
+		public async Task<IdentityResult> ChangeEmail(ChangeEmailRequest request)
+		{
+			var user = await FindUser(request);
+			if (user != null)
+			{
+				var token = await _userManager.GenerateChangeEmailTokenAsync(user, request.NewEmail);
+				return await _userManager.ChangeEmailAsync(user, request.NewEmail, token);
 			}
 
 			return NoSuchUserResult();
@@ -58,6 +71,8 @@ namespace Api.Services
 					return _userManager.FindByIdAsync(userIdentifier.UserId);
 				case var uid when uid.Username != null:
 					return _userManager.FindByNameAsync(userIdentifier.Username);
+				case var uid when uid.Email != null:
+					return _userManager.FindByEmailAsync(userIdentifier.Email);
 				default:
 					return null;
 			}

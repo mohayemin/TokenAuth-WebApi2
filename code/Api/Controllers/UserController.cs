@@ -1,11 +1,8 @@
 ﻿using Api.Services;
 using Api.Services.Requests;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
@@ -39,6 +36,13 @@ namespace Api.Controllers
 		public async Task<IActionResult> Delete([FromBody]UserIdentifier identifier)
 		{
 			var result = await _service.Delete(identifier);
+			return GetResult(result, 204);
+		}
+
+		[HttpPut(nameof(ChangeEmail))]
+		public async Task<IActionResult> ChangeEmail([FromBody]ChangeEmailRequest request)
+		{
+			var result = await _service.ChangeEmail(request);
 			return GetResult(result, 204);
 		}
 
