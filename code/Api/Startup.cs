@@ -14,6 +14,8 @@ using System;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.Extensions.PlatformAbstractions;
 using System.IO;
+using Api.Swagger;
+using System.Threading.Tasks;
 
 namespace Api
 {
@@ -47,6 +49,8 @@ namespace Api
 				var basePath = PlatformServices.Default.Application.ApplicationBasePath;
 				var xmlPath = Path.Combine(basePath, "Api.xml");
 				c.IncludeXmlComments(xmlPath);
+
+				c.OperationFilter<AddAuthorizationHeader>();
 			});
 		}
 
@@ -102,6 +106,22 @@ namespace Api
 					ValidAudience = config.Audiance,
 					IssuerSigningKey = config.SigningCredentials.Key
 				};
+
+				options.Events = new JwtBearerEvents
+				 {
+					 OnAuthenticationFailed = context =>
+					 {
+						 Console.WriteLine("OnAuthenticationFailed: " +
+							 context.Exception.Message);
+						 return Task.CompletedTask;
+					 },
+					 OnTokenValidated = context =>
+					 {
+						 Console.WriteLine($"OnTokenValidated: {context.SecurityToken}: {context.Principal.Identity.Name}");
+						 
+						 return Task.CompletedTask;
+					 }
+				 };
 			});
 		}
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Api.Services
@@ -28,7 +29,7 @@ namespace Api.Services
 
 		public async Task<Token> Issue(TokenIssueRequest request)
 		{
-			var user = await FindUserAsync(request);
+			var user = await FindValideUserAsync(request);
 
 			if (user != null)
 			{
@@ -40,6 +41,22 @@ namespace Api.Services
 				return token;
 			}
 			return null;
+		}
+
+		public async Task<bool> RevokeAsync(ClaimsPrincipal principal)
+		{
+			var dbSet = _db.Set<RefreshToken>();
+			var idClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+			var token = await dbSet.FirstOrDefaultAsync(rt => rt.UserId == idClaim.Value);
+			if (token != null)
+			{
+				dbSet.Remove(token);
+				await _db.SaveChangesAsync();
+
+				return true;
+			}
+
+			return false;
 		}
 
 		private async Task UpsertRefreshTokenAsync(Token token)
@@ -62,7 +79,7 @@ namespace Api.Services
 			await _db.SaveChangesAsync();
 		}
 
-		private async Task<IdentityUser> FindUserAsync(TokenIssueRequest request)
+		private async Task<IdentityUser> FindValideUserAsync(TokenIssueRequest request)
 		{
 			var user = await FindWithRefreshToken(request.RefreshToken);
 

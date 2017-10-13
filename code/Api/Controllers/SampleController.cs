@@ -25,7 +25,7 @@ namespace Api.Controllers
 		[Authorize]
 		public IActionResult RequiresToken()
 		{
-			return Ok("accessible only with access token");
+			return Ok();
 		}
 
 		/// <summary>
