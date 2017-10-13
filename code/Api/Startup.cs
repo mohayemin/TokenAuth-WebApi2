@@ -67,6 +67,8 @@ namespace Api
 			app.UseAuthentication();
 			app.UseMvc();
 
+			app.Run(async context => context.Response.Redirect("swagger"));
+
 			Seed(app);
 		}
 
@@ -111,14 +113,12 @@ namespace Api
 				 {
 					 OnAuthenticationFailed = context =>
 					 {
-						 Console.WriteLine("OnAuthenticationFailed: " +
-							 context.Exception.Message);
+						 Console.WriteLine($"OnAuthenticationFailed: {context.Exception.Message}");
 						 return Task.CompletedTask;
 					 },
 					 OnTokenValidated = context =>
 					 {
 						 Console.WriteLine($"OnTokenValidated: {context.SecurityToken}: {context.Principal.Identity.Name}");
-						 
 						 return Task.CompletedTask;
 					 }
 				 };
