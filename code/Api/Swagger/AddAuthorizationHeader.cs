@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Swashbuckle.AspNetCore.Swagger;
+﻿using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Api.Swagger
 {
@@ -20,7 +16,8 @@ namespace Api.Swagger
 				Name = "Authorization",
 				In = "header",
 				Type = "string",
-				Required = false
+				Required = false,
+				Default = "Bearer ReplaceThisPartWithAccessToken"
 			});
 
 		}
