@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Api.Notifications;
 using System;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Api
 {
@@ -32,6 +33,8 @@ namespace Api
 				.AddScoped<ITokenIssuer, IdentityTokenIssuer>()
 				.AddScoped<INotifier, SampleNotifier>()
 				.AddScoped<UserService>();
+
+			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -40,6 +43,9 @@ namespace Api
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			app.UseSwagger();
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
 
 			app.UseAuthentication();
 			app.UseMvc();
