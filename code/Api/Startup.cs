@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Api.Notifications;
 using System;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.Extensions.PlatformAbstractions;
+using System.IO;
 
 namespace Api
 {
@@ -34,7 +36,18 @@ namespace Api
 				.AddScoped<INotifier, SampleNotifier>()
 				.AddScoped<UserService>();
 
-			services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" }));
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Info
+				{
+					Title = "Token Auth Web API 2.0",
+					Version = "v1"
+				});
+
+				var basePath = PlatformServices.Default.Application.ApplicationBasePath;
+				var xmlPath = Path.Combine(basePath, "Api.xml");
+				c.IncludeXmlComments(xmlPath);
+			});
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -45,7 +58,7 @@ namespace Api
 			}
 
 			app.UseSwagger();
-			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
+			app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Token Auth Web API 2.0"));
 
 			app.UseAuthentication();
 			app.UseMvc();

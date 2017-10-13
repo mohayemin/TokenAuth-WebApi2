@@ -7,6 +7,10 @@ namespace Api.Controllers
 	[Route("sample")]
 	public class SampleController : Controller
     {
+		/// <summary>
+		/// This action is does not require any token
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("freeforall")]
 		public IActionResult FreeForAll()
 		{
