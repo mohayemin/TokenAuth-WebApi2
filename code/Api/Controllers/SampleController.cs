@@ -21,6 +21,8 @@ namespace Api.Controllers
 		/// Sample API that requires a token, but no specific role 
 		/// </summary>
 		/// <returns></returns>
+		/// <response code="200">Valid access token passed</response>
+		/// <response code="401">Access token not passed or passed but invalid</response>   
 		[HttpGet("requirestoken")]
 		[Authorize]
 		public IActionResult RequiresToken()
@@ -32,6 +34,8 @@ namespace Api.Controllers
 		/// Sample API that requires "admin" role
 		/// </summary>
 		/// <returns></returns>
+		/// <response code="200">Access token passed and user has admin role</response>
+		/// <response code="401">Access token not passed or passed but invalid or passed valid but used does not have 'admin' role</response>   
 		[HttpGet("requiresadmin")]
 		[Authorize(Roles = BuiltInRoles.Admin)]
 		public IActionResult RequiresAdmin()
