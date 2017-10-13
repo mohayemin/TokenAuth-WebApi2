@@ -8,7 +8,7 @@ namespace Api.Controllers
 	public class SampleController : Controller
     {
 		/// <summary>
-		/// This action is does not require any token
+		/// Sample API that does not require any token
 		/// </summary>
 		/// <returns></returns>
 		[HttpGet("freeforall")]
@@ -17,6 +17,10 @@ namespace Api.Controllers
 			return Ok("accessible without access token");
 		}
 
+		/// <summary>
+		/// Sample API that requires a token, but no specific role 
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("requirestoken")]
 		[Authorize]
 		public IActionResult RequiresToken()
@@ -24,6 +28,10 @@ namespace Api.Controllers
 			return Ok("accessible only with access token");
 		}
 
+		/// <summary>
+		/// Sample API that requires "admin" role
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet("requiresadmin")]
 		[Authorize(Roles = BuiltInRoles.Admin)]
 		public IActionResult RequiresAdmin()

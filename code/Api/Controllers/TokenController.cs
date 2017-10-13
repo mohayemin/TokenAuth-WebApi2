@@ -15,6 +15,13 @@ namespace TokeAuth.Controllers
 			_issuer = issuer;
 		}
 
+		/// <summary>
+		/// API for issuing a access token.
+		/// </summary>
+		/// <param name="request">
+		/// Either a RefreshToken or Username and Password
+		/// </param>
+		/// <returns></returns>
 		[HttpPost]
 		public async Task<IActionResult> Issue([FromBody]TokenIssueRequest request)
 		{
