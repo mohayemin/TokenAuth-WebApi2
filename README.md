@@ -1,7 +1,7 @@
 ## implementation notes ##
 
 1. Resource request samples  
-Sample requests to test if authorization and authentication is working. Done in SampleController.
+Sample requests to test if authorization and authentication is working. Done in `SampleController`.
 
 2. Authentication with credentials  
 API - `POST /token/Issue`  
@@ -37,14 +37,14 @@ API - `GET /token/Revoke`
 Done using Identity  
 API - `/user/*`  
 Implemented features:  
-9.1 Fetch: GET  
-9.2 Create: POST  
-9.3 Delete: DELETE  
-9.4 Update: PUT
-9.5 Reset Password: PUT /user/ResetPassword  
-9.6 Change Email: PUT /user/ChangeEmail  
-9.6 Add roles: PUT /user/AddRoles  
-9.6 Delete Roles: PUT /user/DeleteRoles  
+9.1 Fetch: `GET`  
+9.2 Create: `POST`  
+9.3 Delete: `DELETE`  
+9.4 Update: `PUT`
+9.5 Reset Password: `PUT /user/ResetPassword`  
+9.6 Change Email: `PUT /user/ChangeEmail`  
+9.6 Add roles: `PUT /user/AddRoles`  
+9.6 Delete Roles: `PUT /user/DeleteRoles`  
 
 10. Seed data  
 See `Startup.Seed()`
