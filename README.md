@@ -1,3 +1,5 @@
+## implementation notes ##
+
 1. Resource request samples  
 Sample requests to test if authorization and authentication is working. Done in SampleController.
 
@@ -7,19 +9,19 @@ API - `POST /token/Issue`
 `IdentityTokenIssuer` implements `ITokenIssuer` and uses .NET core identity to verify the user credentials.
 
 3. Authentication with refresh token  
-See #2
+See 2
 Verification of refresh token is done by database lookup.
 
 4. Renew access token  
 Renew and issue is done with the same workflow.
-See #2
+See 2
 
 5. Access token generation  
 `ITokenBuilder` is the abstraction for creating token and is implemented by `JwtTokenBuilder`. Output is a `Token` object that contains both JWT access token and crypto random refresh token.  
 Configs for generating tokens are in `ITokenConfig`. A sample configuration is provided by `SampleTokenConfig`. We can have a implementation which reads the config from a configuration file or may be database.
 
 6. Refresh token generation  
-See #5  
+See 5  
 The refresh tokens are stored in `RefreshToken` table. An entity model class with same name is there.
 
 7. Encryption/decryption  
