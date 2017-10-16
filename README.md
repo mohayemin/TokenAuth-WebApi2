@@ -45,6 +45,14 @@ Implemented features:
 9.6 Change Email: `PUT /user/ChangeEmail`  
 9.6 Add roles: `PUT /user/AddRoles`  
 9.6 Delete Roles: `PUT /user/DeleteRoles`  
+**Authorization:** Any user profile related changes are restricted to admin. 
+If you check the `UserController`, you will see that it is decorated by `[Authorize(Roles = BuiltInRoles.Admin)]`. 
+You can even add multiple roles here to allow multiple types of user to be able to change this. 
+For instance, you may want to have a separate role like `ProfileAdmin` whom you want to give access to change user profile. To do that simply change the decorator to 
+```[Authorize(Roles = $"{BuiltInRoles.Admin},{BuiltInRoles.ProfileAdmin}")]```.  
+There is no such thing as `BuiltInRoles.ProfileAdmin` right now, 
+but of course, you can just open `BuiltInRoles` class and add a proeprty there.
+Also, do not forget to add the role from `Startup.Seed()`.
 
 10. Seed data  
 See `Startup.Seed()`
