@@ -24,8 +24,8 @@ Configs for generating tokens are in `ITokenConfig`. A sample configuration is p
 See 5  
 The refresh tokens are stored in `RefreshToken` table. An entity model class with same name is there.
 
-7. Encryption/decryption  
-Encryption/decryption of JWT is done using `System.IdentityModel.Tokens.Jwt`. I created a static `CryptoRandomGenerator` class which is used to generate crypto random refresh token.    
+7. Encoding/Decoding  
+Encoding/decoding of JWT is done using `System.IdentityModel.Tokens.Jwt`. I created a static `CryptoRandomGenerator` class which is used to generate crypto random refresh token.    
 `SampleTokenConfig` uses a symetric key. You can just replace it with asymatric key if you want. Asymatric key should be used if  your business service API is deployed separately from Authentication API.  
 **Note: I just noticed that there is no abstraction for just creating the refresh token. You need to have a separate implementation of ITokenBuilder and have to reimplement JWT building too.**
 
